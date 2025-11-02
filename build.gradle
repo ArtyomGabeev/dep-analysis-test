@@ -1,0 +1,44 @@
+plugins {
+    id 'java-library'
+    id 'com.autonomousapps.dependency-analysis' version '3.4.1'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencyAnalysis {
+    abi {
+        exclusions {
+            ignoreSubPackage('internal')
+            excludeAnnotations("org\\.springframework\\.boot\\.autoconfigure\\.AutoConfiguration")
+        }
+    }
+    issues {
+        all {
+            onAny {
+                severity("fail")
+            }
+        }
+    }
+    structure {
+        bundle('spring-boot-starter-jms') {
+            primary('org.springframework.boot:spring-boot-starter-jms')
+            includeDependency('org.springframework.boot:spring-boot-autoconfigure')
+            includeDependency('org.springframework.boot:spring-boot-starter')
+            includeDependency('org.springframework.boot:spring-boot-jms')
+            includeDependency('org.springframework:spring-context')
+            includeDependency('org.springframework:spring-jms')
+            // included as part of spring boot starter
+            includeDependency('org.springframework:spring-messaging')
+        }
+    }
+}
+
+dependencies {
+    // I would expect this dependency advices to be added explicitly bcz it's part of ABI
+    // api 'org.springframework:spring-messaging:7.0.0-RC2'
+
+    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-jms
+    implementation("org.springframework.boot:spring-boot-starter-jms:4.0.0-RC1")
+}
